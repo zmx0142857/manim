@@ -1,6 +1,7 @@
 import sys
 import os
 import hashlib
+import subprocess
 from contextlib import contextmanager
 
 from manimlib.utils.directories import get_tex_dir
@@ -27,13 +28,14 @@ def get_tex_config():
     if not SAVED_TEX_CONFIG:
         custom_config = get_custom_config()
         SAVED_TEX_CONFIG.update(custom_config["tex"])
-        # Read in template file
-        template_filename = os.path.join(
-            get_manim_dir(), "manimlib", "tex_templates",
-            SAVED_TEX_CONFIG["template_file"],
-        )
-        with open(template_filename, "r") as file:
-            SAVED_TEX_CONFIG["tex_body"] = file.read()
+        if not SAVED_TEX_CONFIG["executable"].startswith("node"):
+            # Read in template file
+            template_filename = os.path.join(
+                get_manim_dir(), "manimlib", "tex_templates",
+                SAVED_TEX_CONFIG["template_file"],
+            )
+            with open(template_filename, "r") as file:
+                SAVED_TEX_CONFIG["tex_body"] = file.read()
     return SAVED_TEX_CONFIG
 
 
@@ -49,7 +51,22 @@ def tex_to_svg_file(tex_file_content):
     )
     if not os.path.exists(svg_file):
         # If svg doesn't exist, create it
-        tex_to_svg(tex_file_content, svg_file)
+        tex_config = get_tex_config()
+        if tex_config["executable"].startswith("node"):
+            manim_mathjax(tex_file_content, svg_file)
+        else:
+            tex_to_svg(tex_file_content, svg_file)
+    return svg_file
+
+
+def manim_mathjax(tex_file_content, svg_file):
+    tex_config = get_tex_config()
+    program = tex_config["executable"]
+    if not os.path.exists(svg_file):
+        process = subprocess.Popen(program, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        process.stdin.write(bytes(tex_file_content, 'utf-8'))
+        with open(svg_file, 'wb') as out:
+            out.write(process.communicate()[0])
     return svg_file
 
 

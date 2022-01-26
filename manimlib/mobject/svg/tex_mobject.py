@@ -33,12 +33,16 @@ class SingleStringTex(VMobject):
 
     def __init__(self, tex_string, **kwargs):
         super().__init__(**kwargs)
+        self.tex_config = get_tex_config()
         assert(isinstance(tex_string, str))
         self.tex_string = tex_string
         if tex_string not in tex_string_to_mob_map:
             with display_during_execution(f" Writing \"{tex_string}\""):
-                full_tex = self.get_tex_file_body(tex_string)
-                filename = tex_to_svg_file(full_tex)
+                if self.tex_config["executable"].startswith("node"):
+                    filename = tex_to_svg_file(tex_string)
+                else:
+                    full_tex = self.get_tex_file_body(tex_string)
+                    filename = tex_to_svg_file(full_tex)
                 svg_mob = SVGMobject(
                     filename,
                     height=None,
@@ -54,6 +58,9 @@ class SingleStringTex(VMobject):
         ))
         self.init_colors()
 
+        global SCALE_FACTOR_PER_FONT_POINT
+        if "scale_factor" in self.tex_config:
+            SCALE_FACTOR_PER_FONT_POINT = float(self.tex_config["scale_factor"])
         if self.height is None:
             self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size)
         if self.organize_left_to_right:
@@ -350,3 +357,4 @@ class Title(TexText):
                 underline.set_width(self.underline_width)
             self.add(underline)
             self.underline = underline
+

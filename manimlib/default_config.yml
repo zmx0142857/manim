@@ -15,16 +15,18 @@ directories:
   # default, these will be stored at tempfile.gettempdir(), e.g. this might
   # return whatever is at to the TMPDIR environment variable.  If you want to
   # specify them elsewhere,
-  temporary_storage: ""
+  temporary_storage: "c:/Users/Administrator/AppData/Local/Temp"
 tex:
-  executable: "latex"
-  template_file: "tex_template.tex" 
-  intermediate_filetype: "dvi"
-  text_to_replace: "[tex_expression]"
+  #executable: "latex"
+  #template_file: "tex_template.tex" 
+  #intermediate_filetype: "dvi"
+  #text_to_replace: "[tex_expression]"
   # For ctex, use the following configuration
   # executable: "xelatex -no-pdf"
   # template_file: "ctex_template.tex"
   # intermediate_filetype: "xdv"
+  executable: "node c:/Users/Administrator/git/js/manim-mathjax/index.js"
+  scale_factor: "1e-5"
 universal_import_line: "from manimlib import *"
 style:
   font: "Consolas"
