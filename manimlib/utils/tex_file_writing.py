@@ -62,11 +62,10 @@ def tex_to_svg_file(tex_file_content):
 def manim_mathjax(tex_file_content, svg_file):
     tex_config = get_tex_config()
     program = tex_config["executable"]
-    if not os.path.exists(svg_file):
-        process = subprocess.Popen(program, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-        process.stdin.write(bytes(tex_file_content, 'utf-8'))
-        with open(svg_file, 'wb') as out:
-            out.write(process.communicate()[0])
+    process = subprocess.Popen(program, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    process.stdin.write(bytes(tex_file_content, 'utf-8'))
+    with open(svg_file, 'wb') as out:
+        out.write(process.communicate()[0])
     return svg_file
 
 

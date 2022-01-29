@@ -321,9 +321,15 @@ def get_configuration(args):
     if not (args.full_screen or custom_config["full_screen"]):
         window_width //= 2
     window_height = window_width * 9 // 16
-    config["window_config"] = {
-        "size": (window_width, window_height),
-    }
+    if "window_config" in custom_config and "size" in custom_config["window_config"]:
+        size = custom_config["window_config"]["size"].split('x')
+        config["window_config"] = {
+            "size": (int(size[0]), int(size[1]))
+        }
+    else:
+        config["window_config"] = {
+            "size": (window_width, window_height),
+        }
 
     # Arguments related to skipping
     stan = config["start_at_animation_number"]
